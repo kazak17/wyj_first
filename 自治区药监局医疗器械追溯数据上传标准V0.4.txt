@@ -1,0 +1,1170 @@
+
+
+
+
+
+
+
+
+自治区药品监督管理局医疗器械追溯数据上传标准
+V0.4
+
+
+
+
+
+
+
+
+
+
+
+
+版本更新记录
+序号	版本号	更新日期	较上一版本更新内容	更新人
+1	V0.1	2022-08-11	初版	李志勇
+2	V0.2	2022-11-16	更新：接口地址修正	李志勇
+3	V0.3	2023-12-26	1、【更新】2015、2016、2017、2018、2021数据子集中SYJBZUDIPI已统一调整为SYJUDIPI，并继续支持接收SYJBZUDIPI；
+2、【更新】更新正式上传接口地址；
+3、【新增】增加”常见问题“目录	刘宇浩
+4	V0.4	2024-1-12	更新：新增【2099】《撤销单信息》数据子集	刘宇浩
+
+
+
+
+目录
+版本更新记录	2
+目录	3
+一、	文档描述	4
+二、	数据上传步骤	4
+三、	数据上传接口	4
+1)	接口地址	4
+2)	接口请求响应头	5
+3)	接口请求参数	5
+4)	接口响应参数	6
+四、	数据集目录	6
+五、	数据子集定义	7
+1)	【10】基础信息数据子集	7
+1.	【1011】《境内医疗器械生产企业》基本信息数据子集	7
+2.	【1012】《境内医疗器械生产许可证》基本信息数据子集	9
+3.	【1013】《境内医疗器械生产备案凭证》基本信息数据子集	9
+4.	【1014】《境内医疗器械委托生产备案凭证》基本信息数据子集	10
+5.	【1015】《医疗器械注册证（境内、进口）》基本信息数据子集	12
+6.	【1016】《医疗器械备案信息（境内、进口）》基本信息数据子集	14
+7.	【1017】《进口医疗器械代理企业》基本信息数据子集	15
+8.	【1021】《医疗器械经营企业》基本信息数据子集	17
+9.	【1022】《医疗器械经营许可证》基本信息数据子集	18
+10.	【1023】《医疗器械经营备案凭证》基本信息数据子集	19
+11.	【1024】《医疗器械配送企业》基本信息数据子集	20
+12.	【1025】《医疗器械使用单位》基本信息数据子集	22
+13.	【1026】《医疗器械基本信息》数据子集（UDI-DI）	23
+2)	【20】应用信息数据子集	28
+1.	【2011】《医疗器械生产信息》数据子集	28
+2.	【2012】《医疗器械进口信息》数据子集	29
+3.	【2013】《医疗器械产品检验报告》数据子集	31
+4.	【2015】《医疗器械发货单》信息数据子集	32
+5.	【2016】《医疗器械收货单》信息数据子集	34
+6.	【2017】《医疗器械使用信息》数据子集	37
+7.	【2018】《医疗器械召回信息》数据子集	38
+8.	【2021】《医疗器械零售信息》数据子集	40
+9.	【2051-2053】《温湿度信息》数据子集	41
+六、	数据字典D	44
+D.1 行政区划	44
+D.2 发货单类型	44
+D.3 收货单类型	45
+七、	不同单位上传数据集说明	45
+1.	生产单位上传	45
+2.	经营单位上传	45
+3.	配送单位上传	46
+4.	使用单位上传	46
+八、备注	46
+一、文档描述
+　　本文档主要描述说明第三方上传自治区药品监督管理局医疗器械追溯数据的方式以及标准。
+　　
+　　本文档阅读对象：自治区药品监督管理局医疗器械追溯系统开发人员、第三方医疗器械追溯数据上传方。
+二、数据上传步骤
+1、接入方从自治区药品监督管理局医疗器械追溯平台申请appId和appKey，其中appId用于身份识别，appKey用于加密，加密方式为 SM2，加密模式 - C1C2C3，具体可参考样例程序。
+2、接入方根据“数据上传接口”部分描述内容，组装待上传的数据。
+3、接入方调用数据上传（测试）接口进行接口联调。
+4、接入方调用数据上传（正式）接口进行数据上传。
+三、数据上传接口
+说明：
+1、请上传方自行记录数据上传日志，用于上传问题的排查。
+2、上传方数据上传需要支持重传的机制。
+1)接口地址
+接口地址由自治区药品监督管理局医疗器械追溯系统建设方提供。
+
+测试上传接口地址：https://zs.xjfda.com/mevt-data-receive-test/receive-data
+正式上传接口地址：https://zs.xjfda.com/mevt-data-receive/receive-data
+2)接口请求响应头
+请求方法：post
+请求头：content-type: application/json
+响应头：content-type: application/json
+3)接口请求参数
+json格式字符串
+参数描述	参数名	必填	类型	示例值	描述
+请求方APPID	appId	是	String(50)	1234567890	接入方从追溯平台申请的appId
+事件编号	eventId	是	String(50)	3K8264ILTKCH16CQ2502SI8ZNMTM67	事件编号,UUID
+数据集	eventType	是	String(2)	10或20	10：基础信息数据
+20：应用信息数据
+数据子集	subType	是	String(4)	数据文件内容所属数据子集	详见：数据集目录
+数据文件内容	data	是	String	详见《示例代码》	将数据子集以xml格式进行组装（参考示例xml），然后对xml字符串进行zip压缩->base64编码->加密->base64编码，生成data内容。
+
+使用appKey进行加密
+时间戳	timestamp	是	String(32)	20190821164206080	时间戳，格式为YYYYMMddHHmmssSSS
+请求报文格式示例 json:
+
+ {
+　　"appId": "1234567890",
+　　"eventId": "3K8264ILTKCH16CQ2502SI8ZNMTM67",
+    "eventType": "10",
+    "subType": "1011",
+    "data": "对xml字符串进行zip压缩->base64编码->加密->base64编码，生成data内容"
+    "timestamp": " 20220804111750121",
+ }
+4)接口响应参数
+字段名	变量名	必填	类型	示例值	描述
+返回状态码	status	是	int	0	此字段是通信标识，非交易标识。
+此值大于0表示有错误，错误具
+体描述，查看message
+返回信息	message	是	String(500)	数据接收成功	当status大于0时返回信息为错误原因
+例如:签名失败参数格式校验错误
+返回格式例如下：
+{
+  "status": 0,
+  "message": "数据接收成功"
+}
+四、数据集目录
+一、【10】基本信息集
+【1011】《境内医疗器械生产企业》基本信息数据子集
+【1012】《境内医疗器械生产许可证》基本信息数据子集
+【1013】《境内医疗器械生产备案凭证》基本信息数据子集
+【1014】《境内医疗器械委托生产备案凭证》基本信息数据子集
+【1015】《医疗器械注册证（境内、进口）》基本信息数据子集
+【1016】《医疗器械备案信息（境内、进口）》基本信息数据子集
+【1017】《进口医疗器械代理企业》基本信息数据子集
+【1021】《医疗器械经营企业》基本信息数据子集
+【1022】《医疗器械经营许可证》基本信息数据子集
+【1023】《医疗器械经营备案凭证》基本信息数据子集
+【1024】《医疗器械配送企业》基本信息数据子集
+【1025】《医疗器械使用单位》基本信息数据子集
+【1026】《医疗器械基本信息》数据子集（UDI-DI）
+
+
+二、【20】应用信息集
+【2011】《医疗器械生产信息》数据子集
+【2012】《医疗器械进口信息》数据子集
+【2013】《医疗器械产品检验报告》数据子集
+【2015】《医疗器械发货单》信息数据子集
+【2016】《医疗器械收货单》信息数据子集
+【2017】《医疗器械使用信息》数据子集
+【2018】《医疗器械召回信息》数据子集
+【2021】《医疗器械零售信息》数据子集
+【2051】单据与存储设备关系信息
+【2052】存储设备温湿度信息
+【2053】运输温度信息
+
+五、数据子集定义     
+1)【10】基础信息数据子集
+1.【1011】《境内医疗器械生产企业》基本信息数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	生产企业统一社会信用代码	TYSHXYDM	uscid	营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+2	生产企业名称	QYMC	companyName	营业执照上的“名称”	字符型	an..200		必选	
+3	生产企业类型	QYLX	companyType	营业执照上的“类型”	字符型	an..100		可选	
+4	住所地址	ZSDZ	address	营业执照上的“住所”	字符型	an..200		可选	
+5	住所地址- 国家（或地区）	ZSDZGJHDQ	countryOrRegionCode	住所地址中的国家或地区的名称代码	字符型	an3	见D.1	必选	
+6	住所地址- 省（直辖市/自治区）	ZSDZSZXSZZQ	provinceCode	住所地址中的省、直辖市、自治区或特别行政区的名称代码	字符型	an6	见D.1	必选	
+7	住所地址- 市（区/自治州/盟）	ZSDZSQZZZM	cityCode	住所地址中的市、地区、自治州或盟的名称代码	字符型	an6	见D.1	必选	
+8	住所地址-县（自治县/ 县级市）	ZSDZXZZXXJS	countyCode	住所地址中的县、自治县或县级市的名称代码	字符型	an6	见D.1	必选	
+9	住所地址- 乡（镇/街道办事处）	ZSDZXZJDBSC	township	住所地址中的乡、镇或城市街道办事处的名称	字符型	an..70		可选	
+10	住所地址- 村（街/路/弄等）	ZSDZCJLLD	village	住所地址中的村或城市的街、路、弄等名称	字符型	an..70		可选	
+11	住所地址-门牌号码	ZSDZMPHM	houseNumber	住所地址中的门牌号码	字符型	an..70		可选	
+12	法定代表人	FDDBR	legalRepresentative	营业执照上的“法定代表人”	字符型	an..60		可选	
+13	注册资本	ZCZB	registeredCapital	营业执照上的“注册资本”	字符型	an..60		可选	
+14	成立日期	CLRQ	dateOfEstablishment	营业执照上的“成立日期”	日期型	YYYY-MM-DD		可选	
+15	营业期限	YYQX	businessTerm	营业执照上的“营业期限”	字符型	an..60		可选	
+16	经营范围	JYFW	businessScope	营业执照上的“经营范围”	字符型	an..500		可选	
+17	登记机关	DJJG	registrationAuthority	营业执照上的“登记机关”	字符型	an..60		可选	
+18	固定电话号码	GDDHHM	tel	企业用于对外联系的固定电话号码	字符型	an..18		可选	
+19	传真号码	CZHM	fax	企业用于对外联系的传真号码	字符型	an..18		可选	
+20	电子信箱	DZXX	email	企业用于对外联系的电子信箱地址	字符型	an..50		可选	
+21	企业网址	QYWZ	webURL	企业在互联网域名注册管理机构或域名根服务器运行机构申请注册的域名	字符型	an..200		可选	
+22	联系人	LXR	contact	医疗器械追溯工作负责人的姓名	字符型	an..60		可选	
+23	联系电话	LXDH	contactTel	医疗器械追溯工作负责人的电话号码	字符型	an..18		可选	
+
+2.【1012】《境内医疗器械生产许可证》基本信息数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	许可证编号	XKZBH	permitNo	许可证上的“许可证编号”	字符型	an..50		必选	
+2	企业名称	QYMC	companyName	许可证上的“企业名称”	字符型	an..200		必选	
+3	统一社会信用代码	TYSHXYDM	uscid	营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+4	生产地址	SCDZ	productionAddress	许可证上的“生产地址”	字符型	an..200		可选	
+5	法定代表人	FDDBR	legalRepresentative	许可证上的“法定代表人”	字符型	an..60		可选	
+6	企业负责人	QYFZR	responsiblePerson	许可证上的“企业负责人”	字符型	an..60		可选	
+7	有效期限	YXQ	validTerm	许可证上的“有效期限”	日期型	YYYY-MM-DD		可选	
+8	生产范围	SCFW	scopeOfProduce	许可证上的“生产范围”	字符型	an..500		可选	
+9	发证部门	FZJG	issuingAuthority	许可证上的“发证部门”	字符型	an..200		可选	
+10	发证日期	FZRQ	issuingDate	许可证上的“发证日期”	日期型	YYYY-MM-DD		可选	
+
+   
+3.【1013】《境内医疗器械生产备案凭证》基本信息数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	备案凭证编号	BAPZBH	recordNo	备案凭证上的“备案凭证编号”	字符型	an..50		必选	
+2	企业名称	QYMC	companyName	备案凭证上的“企业名称”	字符型	an..200		必选	
+3	统一社会信用代码	TYSHXYDM	uscid	营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+4	生产地址	SCDZ	productionAddress	备案凭证上的“生产地址”	字符型	an..200		可选	
+5	法定代表人	FDDBR	legalRepresentative	备案凭证上的“法定代表人”	字符型	an..60		
+可选	
+6	企业负责人	QYFZR	responsiblePerson	备案凭证上的“企业负责人”	字符型	an..60		
+可选	
+7	住所	ZS	address	备案凭证上的“住所”	字符型	an..200		可选	
+8	生产范围	SCFW	scopeOfProduce	备案凭证上的“生产范围”	字符型	an..500		可选	
+9	备案部门	BABM	issuingAuthority	备案凭证上的“备案部门”	字符型	an..200		可选	
+10	备案日期	BARQ	issuingDate	备案凭证上的“备案日期”	日期型	YYYY-MM-DD		可选	
+
+4.【1014】《境内医疗器械委托生产备案凭证》基本信息数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	备案凭证号	BAPZH	recordNo	委托生产备案凭编号	字符型	an..100		必选	
+2	委托方企业名称	WTFQYMC	companyNameEntrust	委托生产备案凭证上的“委托方信息-企业名称”	字符型	an..200		必选	
+3	委托方统一社会信用代码	WTFTYSHXYDM	uscidEntrust	委托生产备案凭证上的“委托方信息-统一社会信用代码”	字符型	an..18		必选	
+4	委托方许可证号或备案编号	WTFXKBAH	licenseNoEntrust	委托生产备案凭证上的“委托方信息-许可证号或备案编号”	字符型	an..50		可选	
+5	委托方住所	WTFZS	addressEntrust	委托生产备案凭证上的“委托方信息-住所”	字符型	an..200		可选	
+6	委托方住所邮编	WTFZSYB	addressPostalCodeEntrust	委托生产备案凭证上的“委托方信息-住所-邮编”	字符型	an..10		可选	
+7	委托方住所电话	WTFZSDH	addressPhoneEntrust	委托生产备案凭证上的“委托方信息-住所-电话”	字符型	an..50		可选	
+8	委托方生产地址	WTFSCDZ	productionAddressEntrust	委托生产备案凭证上的“委托方信息-生产地址”	字符型	an..200		可选	
+9	委托方生产地址邮编	WTFSCDZYB	productionAddressPostalCodeEntrust	委托生产备案凭证上的“委托方信息-生产地址-邮编”	字符型	an..10		可选	
+10	委托方生产地址电话	WTFSCDZDH	productionAddressPhoneEntrust	委托生产备案凭证上的“委托方信息-生产地址-电话”	字符型	an..50		可选	
+11	委托方法定代表人	WTFFDDBR	legalRepresentativeEntrust	委托生产备案凭证上的“委托方信息-法定代表人”	字符型	an..60		可选	
+12	委托方企业负责人	WTFQYFZR	responsiblePersonEntrust	委托生产备案凭证上的“委托方信息-企业负责人”	字符型	an..60		可选	
+13	委托方联系人	WTFLXR	contactEntrust	委托生产备案凭证上的“委托方信息-联系人”	字符型	an..60		可选	
+14	受托方企业名称	STFQYMC	companyNameTrustee	委托生产备案凭证上的“受托方信息-企业名称”	字符型	an..200		必选	
+15	受托方统一社会信用代码	STFTYSHXYDM	uscidTrustee	委托生产备案凭证上的“受托方信息-统一社会信用代码”	字符型	an..18		必选	
+16	受托方许可证号或备案编号	STFXKBAH	licenseNoTrustee	委托生产备案凭证上的“受托方信息-许可证号或备案编号”	字符型	an..50		可选	
+17	受托方住所	STFZS	addressTrustee	委托生产备案凭证上的“受托方信息-住所”	字符型	an..200		可选	
+18	受托方住所邮编	STFZSYB	addressPostalCodeTrustee	委托生产备案凭证上的“受托方信息-住所-邮编”	字符型	an..10		可选	
+19	受托方住所电话	STFZSDH	addressPhoneTrustee	委托生产备案凭证上的“受托方信息-住所-电话”	字符型	an..50		可选	
+20	受托方生产地址	STFSCDZ	productionAddressTrustee	委托生产备案凭证上的“受托方信息-生产地址”	字符型	an..200		可选	
+21	受托方生产地址邮编	STFSCDZYB	productionAddressPostalCodeTrustee	委托生产备案凭证上的“受托方信息-生产地址-邮编”	字符型	an..10		可选	
+22	受托方生产地址电话	STFSCDZDH	productionAddressPhoneTrustee	委托生产备案凭证上的“受托方信息-生产地址-电话”	字符型	an..50		可选	
+23	受托方法定代表人	STFFDDBR	legalRepresentativeTrustee	委托生产备案凭证上的“受托方信息-法定代表人”	字符型	an..60		可选	
+24	受托方企业负责人	STFQYFZR	responsiblePersonTrustee	委托生产备案凭证上的“受托方信息-企业负责人”	字符型	an..60		可选	
+25	受托方联系人	STFLXR	contactTrustee	委托生产备案凭证上的“受托方信息-联系人”	字符型	an..60		可选	
+26	备案部门	BABM	issuingAuthority	委托生产备案凭证上的“备案部门”	字符型	an..200		可选	
+27	备案日期	BARQ	issuingDate	委托生产备案凭证上的“备案日期”	日期型	YYYY-MM-DD		可选	
+　委托生产
+　产品信息	WTSCCPXXS	products	　委托生产产品信息
+　（多条）	array				
+1	产品名称	CPMC	productName	备案凭证上的“委托生产产品信息-产品名称”	字符型	an..200		必选	
+2	产品注册证号/备案号	CPZCBAH	productLicenseNo	备案凭证上的“委托生产产品信息-产品注册证号/备案号”	字符型	an..50		可选	
+3	委托期限	WTQX	entrustTerm	备案凭证上的“委托生产产品信息-委托期限”	日期型	
+YYYY-MM-DD		
+可选	
+
+
+5.【1015】《医疗器械注册证（境内、进口）》基本信息数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	是否进口	SFJK	import	是否进口医疗器械	整数型	n..1	0,1	必选	0：否
+1：是
+2	注册证编号	ZCZBH	licenseNo	注册证上的“注册证编号”	字符型	an..50		必选	
+3	注册人名称	ZCRMC	companyName	注册证上的“注册人名称”	字符型	an..200		必选	
+4	注册人统一社会信用代码	ZCRTYSHXYDM	registerUscid	注册人营业执照上的“统一社会信用代码”	字符型	an..18		条件	若为境内医疗器械，此项必填；若为进口医疗器械，此项不填
+5	生产地址	SCDZ	productionAddress	注册证上的“生产地址”	字符型	an..200		可选	
+6	代理人名称	DLRMC	agentName	注册证上的“代理人名称”	字符型	an..60		可选	
+7	代理人统一社会信用代码	DLRTYSHXYDM	agentUscid	代理人营业执照上的“统一社会信用代码”	字符型	an..18		可选	若为境内医疗器械，此项不填；若为进口医疗器械，此项必填
+8	代理人住所	DLRZS	agentAddress	注册证上的“代理人住所”	字符型	an..60		可选	
+9	产品名称	CPMC	productName	注册证上的“产品名称”	字符型	an..200		必选	
+10	管理类别	GLLB	manageType	医疗器械管理类别	整数型	n..1	1,2,3	必选	1：一类
+2：二类
+3：三类
+11	型号规格	XHGG	specification	注册证上的“型号规格”	字符型	an..500		可选	
+12	结构及组成	JGJZC	composition	注册证上的“结构及组成”	字符型	an..200		可选	
+13	适用范围	SYFW	scopeOfApplication	注册证上的“适用范围”	字符型	an..500		可选	
+14	产品储存条件及有效期	CPZCTJJYXQ	storageConditions	产品储存条件及有效期	字符型	an..500		可选	
+15	其他内容	QTNR	otherInfo	注册证上的“其他内容”	字符型	an..500		可选	
+16	备注	BZ	remark	注册证上的“备注”	字符型	an..500		可选	
+17	审批部门	SPBM	approvalDepartment	注册证上的“审批部门”	字符型	an..200		可选	
+18	批准日期	PZRQ	approvalDate	注册证上的“批准日期”	日期型	YYYY-MM-DD		可选	
+19	有效期至	YXQZ	termOfValidity	注册证上的“有效期至”	日期型	YYYY-MM-DD		可选	
+20	变更情况	BGQK	changeInfo	注册产品变更信息	字符型	an..500		可选	
+
+6.【1016】《医疗器械备案信息（境内、进口）》基本信息数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	是否进口	SFJK	import	是否进口医疗器械	整数型	n..1	0,1	必选	0：否
+1：是
+2	备案号	BAH	recordNo	备案信息上的“备案号”	字符型	an..50		必选	
+3	备案人名称	BARMC	companyName	备案信息上的“备案人名称”	字符型	an..200		必选	
+4	备案人统一社会信用代码	BARTYSHXYDM	uscid	备案人营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+5	备案人注册地址	BARZCDZ	registerAddress	备案信息上的“备案人注册地址”	字符型	an..200		可选	
+6	生产地址	SCDZ	productionAddress	备案人备案信息上的“生产地址”	字符型	an..200		可选	
+7	代理人名称	DLRMC	agentName	备案信息上的“代理人名称”	字符型	an..60		条件
+必选	若为境内医疗器械，此项不填；若为进口医疗器械，此项必填
+8	代理人统一社会信用代码	DLRTYSHXYDM	agentUscid	代理人营业执照上的“统一社会信用代码”	字符型	an..18		条件
+必选	若为境内医疗器械，此项不填；若为进口医疗器械，此项必填
+9	代理人注册地址	DLRZSDZ	agentAddress	备案信息上的“代理人注册地址”	字符型	an..60		可选	
+10	产品名称	CPMC	productName	备案信息上的“产品名称”	字符型	an..200		必选	
+11	型号规格	XHGG	specification	备案信息上的“型号规格”	字符型	an..500		可选	
+12	产品描述	CPMS	productDescribe	备案信息上的“产品描述”	字符型	an..200		可选	
+13	预期用途	YQYT	purpose	备案信息上的“预期用途”	字符型	an..500		可选	
+14	产品储存条件及有效期	CPZCTJJYXQ	storageConditions	产品储存条件及有效期	字符型	an..200		可选	
+15	备注	BZ	remark	备案信息上的“备注”	字符型	an..500		可选	
+16	备案单位	BADW	recordOrgan	备案信息上的“备案单位”	字符型	an..200		可选	
+17	备案日期	BARQ	recordDate	备案信息上的“备案日期”	日期型	YYYY-MM-DD		可选	
+18	变更情况	BGQK	changeInfo	备案信息上的“变更情况”	字符型	an..500		可选	
+
+
+7.【1017】《进口医疗器械代理企业》基本信息数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	代理企业统一社会信用代码	DLQYTYSHXYDM	uscid	代理企业营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+2	代理企业名称	DLQYMC	companyName	代理企业营业执照上的“名称”	字符型	an..200		必选	
+3	代理企业类型	DLQYLX	companyType	代理企业营业执照上的“类型”	字符型	an..200		可选	
+4	代理企业住所地址	ZSDZ	address	代理企业营业执照上的“住所”	字符型	an..200		可选	
+5	代理企业住所地址- 国家（或地
+区）	ZSDZGJHDQ	countryOrRegionCode	代理企业住所地址中的国家或地区的名称代码	字符型	an3	见D.1	必选	
+6	代理企业住所地址- 省（直辖市/自治区）	ZSDZSZXSZZQ	provinceCode	代理企业住所地址中的省、直辖市、自治区或特别行政区的名称代码	字符型	an6	见D.1	必选	
+7	代理企业住所地址- 市（区/自治州/盟）	ZSDZSQZZZM	cityCode	代理企业住所地址中的市、地区、自治州或盟的名称代码	字符型	an6	见D.1	必选	
+8	代理企业住所地址-
+县（自治县/ 县级市）	ZSDZXZZXXJS	countyCode	代理企业住所地址中的县、自治县或县级市的名称代码	字符型	an6	见D.1	必选	
+9	代理企业住所地址- 乡（镇/街道办事处）	ZSDZXZJDBSC	township	代理企业住所地址中的乡、镇或城市街道办事处的名称	字符型	an..70		可选	
+10	代理企业住所地址- 村（街/路/
+弄等）	ZSDZCJLLD	village	代理企业住所地址中的村或城市的街、路、弄等名称	字符型	an..70		可选	
+11	代理企业住所地址-
+门牌号码	ZSDZMPHM	houseNumber	代理企业住所地址中的门牌号码	字符型	an..70		可选	
+12	代理企业法定代表人	FDDBR	legalRepresentative	代理企业营业执照上的“法定代表人”	字符型	an..60		可选	
+13	代理企业注册资本	ZCZB	registeredCapital	代理企业营业执照上的“注册资本”	字符型	an..60		可选	
+14	代理企业成立日期	CLRQ	dateOfEstablishment	代理企业营业执照上的“成立日期”	日期型	YYYY-MM-DD		可选	
+15	代理企业营业期限	YYQX	businessTerm	代理企业营业执照上的“营业期限”	字符型	an..60		可选	
+16	代理企业经营范围	JYFW	businessScope	代理企业营业执照上的“经营范围”	字符型	an..500		可选	
+17	代理企业登记机关	DJJG	registrationAuthority	代理企业营业执照上的“登记机关”	字符型	an..60		可选	
+18	代理企业固定电话号码	GDDHHM	tel	代理企业企业用于对外联系的固定电话号码	字符型	an..18		可选	
+19	代理企业传真号码	CZHM	fax	代理企业企业用于对外联系的传真号码	字符型	an..18		可选	
+20	代理企业电子信箱	DZXX	email	代理企业企业用于对外联系的电子信箱地址	字符型	an..50		可选	
+21	代理企业企业网址	QYWZ	webUrl	代理企业在互联网域名注册管理机构或域名根服务器运行机构申请注册的域名	字符型	an..200		可选	
+22	代理企业联系人	LXR	contact	代理企业医疗器械追溯工作负责人的姓名	字符型	an..60		可选	
+23	代理企业联系电话	LXDH	contactTel	代理企业医疗器械追溯工作负责人的电话号码	字符型	an..18		可选	
+
+
+8.【1021】《医疗器械经营企业》基本信息数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	经营企业统一社会信用代码	TYSHXYDM	uscid	营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+2	经营企业名称	QYMC	companyName	营业执照上的“名称”	字符型	an..200		必选	
+3	经营企业类型	QYLX	companyType	营业执照上的“类型”	字符型	an..200		可选	
+4	住所地址	ZSDZ	address	营业执照上的“住所”	字符型	an..200		可选	
+5	住所地址- 国家（或地
+区）	ZSDZGJHDQ	countryOrRegionCode	住所地址中的国家或地区的名称代码	字符型	an3	见D.1	必选	
+6	住所地址- 省（直辖市/自治区）	ZSDZSZXSZZQ	provinceCode	住所地址中的省、直辖市、自治区或特别行政区
+的名称代码	字符型	an6	见D.1	必选	
+7	住所地址- 市（区/自治州/盟）	ZSDZSQZZZM	cityCode	住所地址中的市、地区、自治州或盟的名称代码	字符型	an6	见D.1	必选	
+8	住所地址-
+县（自治县/ 县级市）	ZSDZXZZXXJS	countyCode	住所地址中的县、自治县或县级市的名称代码	字符型	an6	见D.1	必选	
+9	住所地址- 乡（镇/街道办事处）	ZSDZXZJDBSC	township	住所地址中的乡、镇或城市街道办事处的名称	字符型	an..70		可选	
+10	住所地址- 村（街/路/
+弄等）	ZSDZCJLLD	village	住所地址中的村或城市的街、路、弄等名称	字符型	an..70		可选	
+11	住所地址-
+门牌号码	ZSDZMPHM	houseNumber	住所地址中的门牌号码	字符型	an..70		可选	
+12	法定代表人	FDDBR	legalRepresentative	营业执照上的“法定代表人”	字符型	an..60		可选	
+13	注册资本	ZCZB	registeredCapital	营业执照上的“注册资本”	字符型	an..60		可选	
+14	成立日期	CLRQ	dateOfEstablishment	营业执照上的“成立日期”	日期型	YYYY-MM-DD		可选	
+15	营业期限	YYQX	businessTerm	营业执照上的“营业期限”	字符型	an..60		可选	
+16	经营范围	JYFW	businessScope	营业执照上的“经营范围”	字符型	an..500		可选	
+17	登记机关	DJJG	registrationAuthority	营业执照上的“登记机关”	字符型	an..60		可选	
+18	固定电话号码	GDDHHM	tel	企业用于对外联系的固定电话号码	字符型	an..18		可选	
+19	传真号码	CZHM	fax	企业用于对外联系的传真号码	字符型	an..18		可选	
+20	电子信箱	DZXX	email	企业用于对外联系的电子信箱地址	字符型	an..50		可选	
+21	企业网址	QYWZ	webURL	企业在互联网域名注册管理机构或域名根服务器运行机构申请注册的域名	字符型	an..200		可选	
+22	联系人	LXR	contact	医疗器械追溯工作负责人的姓名	字符型	an..60		可选	
+23	联系电话	LXDH	contactTel	医疗器械追溯工作负责人的电话号码	字符型	an..18		
+可选	
+
+9.【1022】《医疗器械经营许可证》基本信息数据子集
+
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	许可证编号	XKZBH	permitNo	医疗器械经营许可证上的“许可证编号”	字符型	an..50		必选	
+2	企业名称	QYMC	companyName	医疗器械经营许可证上的“企业名称”	字符型	an..200		必选	
+3	统一社会信用代码	TYSHXYDM	uscid	营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+4	住所	ZS	address	医疗器械经营许可证上的“住所”	字符型	an..200		可选	
+5	法定代表人	FDDBR	legalRepresentative	医疗器械经营许可证上的“法定代表人”	字符型	an..60		可选	
+6	企业负责人	QYFZR	responsiblePerson	医疗器械经营许可证上的“企业负责人”	字符型	an..60		可选	
+7	经营场所	JYCS	managementAddress	医疗器械经营许可证上的“经营场所”	字符型	an..200		可选	
+8	经营方式	JYFS	managementWay	医疗器械经营许可证上的“经营方式”	字符型	an..50		可选	
+9	库房地址	KFDZ	warehouseAddress	医疗器械经营许可证上的“库房地址”	字符型	an..200		可选	
+10	经营范围	JYFW	businessScope	医疗器械经营许可证上的“经营范围”	字符型	an..500		可选	
+11	有效期	YXQ	validTerm	医疗器械经营许可证上的“有效期”	日期型	YYYY-MM-DD		可选	
+12	发证部门	FZBM	issuingAuthority	医疗器械经营许可证上的“发证部门”	字符型	an..200		可选	
+13	发证日期	FZRQ	issuingDate	医疗器械经营许可证的“发证日期”	日期型	YYYY-MM-DD		可选	
+10.【1023】《医疗器械经营备案凭证》基本信息数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	备案编号	BABH	recordNo	医疗器械经营备案凭证上的“编号”	字符型	an..50		必选	
+2	企业名称	QYMC	companyName	医疗器械经营备案凭证上的“企业名称”	字符型	an..200		必选	
+3	统一社会信用代码	TYSHXYDM	uscid	营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+4	住所	ZS	address	医疗器械经营备案凭证上的“住所”	字符型	an..200		可选	
+5	法定代表人	FDDBR	legalRepresentative	医疗器械经营备案凭证上的“法定代表人”	字符型	an..60		可选	
+6	企业负责人	QYFZR	responsiblePerson	医疗器械经营备案凭证上的“企业负责人”	字符型	an..60		可选	
+7	经营场所	JYCS	managementAddress	医疗器械经营备案凭证上的“经营场所”	字符型	an..200		可选	
+8	经营方式	JYFS	managementWay	医疗器械经营备案凭证上的“经营方式”	字符型	an..50		可选	
+9	库房地址	KFDZ	warehouseAddress	医疗器械经营备案凭证上的“库房地址”	字符型	an..200		可选	
+10	经营范围	JYFW	businessScope	医疗器械经营备案凭证上的“经营范围”	字符型	an..500		可选	
+11	备案部门	BABM	recordDepartment	医疗器械经营备案凭证上的“备案部门”	字符型	an..200		可选	
+12	备案日期	BARQ	recordDate	医疗器械经营备案凭证的“备案日期”	日期型	YYYY-MM-DD		可选	
+
+11.【1024】《医疗器械配送企业》基本信息数据子集
+
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	配送企业统一社会信用代码	TYSHXYDM	uscid	营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+2	配送企业名称	QYMC	companyName	营业执照上的“名称”	字符型	an..200		必选	
+3	配送企业类型	QYLX	companyType	营业执照上的“类型”	字符型	an..50		可选	
+4	住所地址	ZSDZ	address	营业执照上的“住所”	字符型	an..200		可选	
+5	住所地址- 国家（或地
+区）	ZSDZGJHDQ	countryOrRegionCode	住所地址中的国家或地区的名称代码	字符型	an3	见D.1	必选	
+6	住所地址- 省（直辖市/自治区）	ZSDZSZXSZZQ	provinceCode	住所地址中的省、直辖市、自治区或特别行政区
+的名称代码	字符型	an6	见D.1	必选	
+7	住所地址- 市（区/自治州/盟）	ZSDZSQZZZM	cityCode	住所地址中的市、地区、自治州或盟的名称代码	字符型	an6	见D.1	必选	
+8	住所地址-
+县（自治县/ 县级市）	ZSDZXZZXXJS	countyCode	住所地址中的县、自治县或县级市的名称代码	字符型	an6	见D.1	必选	
+9	住所地址- 乡（镇/街道办事处）	ZSDZXZJDBSC	township	住所地址中的乡、镇或城市街道办事处的名称	字符型	an..70		可选	
+10	住所地址- 村（街/路/
+弄等）	ZSDZCJLLD	village	住所地址中的村或城市的街、路、弄等名称	字符型	an..70		可选	
+11	住所地址-
+门牌号码	ZSDZMPHM	houseNumber	住所地址中的门牌号码	字符型	an..70		可选	
+12	法定代表人	FDDBR	legalRepresentative	营业执照上的“法定代表人”	字符型	an..60		可选	
+13	注册资本	ZCZB	registeredCapital	营业执照上的“注册资本”	字符型	an..60		可选	
+14	成立日期	CLRQ	dateOfEstablishment	营业执照上的“成立日期”	日期型	YYYY-MM-DD		可选	
+15	营业期限	YYQX	businessTerm	营业执照上的“营业期限”	字符型	an..60		可选	
+16	经营范围	JYFW	businessScope	营业执照上的“经营范围”	字符型	an..500		可选	
+17	登记机关	DJJG	registrationAuthority	营业执照上的“登记机关”	字符型	an..60		可选	
+18	固定电话号码	GDDHHM	tel	企业用于对外联系的固定电话号码	字符型	an..18		可选	
+19	传真号码	CZHM	fax	企业用于对外联系的传真号码	字符型	an..18		可选	
+20	电子信箱	DZXX	email	企业用于对外联系的电子信箱地址	字符型	an..50		可选	
+21	企业网址	QYWZ	webURL	企业在互联网域名注册管理机构或域名根服务器运行机构申请注册的域名	字符型	an..200		可选	
+22	联系人	LXR	contact	医疗器械追溯工作负责人的姓名	字符型	an..60		可选	
+23	联系电话	LXDH	contactTel	医疗器械追溯工作负责人的电话号码	字符型	an..18		可选	
+
+12.【1025】《医疗器械使用单位》基本信息数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	使用单位统一社会信用代码	TYSHXYDM	uscid	营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+2	使用单位名称	QYMC	companyName	营业执照上的“名称”	字符型	an..200		必选	
+3	使用单位类型	QYLX	companyType	营业执照上的“类型”	字符型	an..200		可选	
+4	住所地址	ZSDZ	address	营业执照上的“住所”	字符型	an..200		可选	
+5	住所地址- 国家（或地
+区）	ZSDZGJHDQ	countryOrRegionCode	住所地址中的国家或地区的名称代码	字符型	an3	见D.1	必选	
+6	住所地址- 省（直辖市/自治区）	ZSDZSZXSZZQ	provinceCode	住所地址中的省、直辖市、自治区或特别行政区
+的名称代码	字符型	an6	见D.1	必选	
+7	住所地址- 市（区/自治州/盟）	ZSDZSQZZZM	cityCode	住所地址中的市、地区、自治州或盟的名称代码	字符型	an6	见D.1	必选	
+8	住所地址-
+县（自治县/ 县级市）	ZSDZXZZXXJS	countyCode	住所地址中的县、自治县或县级市的名称代码	字符型	an6	见D.1	必选	
+9	住所地址- 乡（镇/街道办事处）	ZSDZXZJDBSC	township	住所地址中的乡、镇或城市街道办事处的名称	字符型	an..70		可选	
+10	住所地址- 村（街/路/
+弄等）	ZSDZCJLLD	village	住所地址中的村或城市的街、路、弄等名称	字符型	an..70		可选	
+11	住所地址-
+门牌号码	ZSDZMPHM	houseNumber	住所地址中的门牌号码	字符型	an..70		可选	
+12	法定代表人	FDDBR	legalRepresentative	营业执照上的“法定代表人”	字符型	an..60		可选	
+13	注册资本	ZCZB	registeredCapital	营业执照上的“注册资本”	字符型	an..60		可选	
+14	成立日期	CLRQ	dateOfEstablishment	营业执照上的“成立日期”	日期型	YYYY-MM-DD		可选	
+15	营业期限	YYQX	businessTerm	营业执照上的“营业期限”	字符型	an..60		可选	
+16	经营范围	JYFW	businessScope	营业执照上的“经营范围”	字符型	an..500		可选	
+17	登记机关	DJJG	registrationAuthority	营业执照上的“登记机关”	字符型	an..60		可选	
+18	固定电话号码	GDDHHM	tel	使用单位用于对外联系的固定电话号码	字符型	an..18		可选	
+19	传真号码	CZHM	fax	使用单位用于对外联系的传真号码	字符型	an..18		可选	
+20	电子信箱	DZXX	email	使用单位用于对外联系的电子信箱地址	字符型	an..50		可选	
+21	单位网址	DWWZ	webURL	使用单位在互联网域名注册管理机构或域名根服务器运行机构申请注册的域名	字符型	an..200		可选	
+22	联系人	LXR	contact	医疗器械追溯工作负责人的姓名	字符型	an..60		可选	
+23	联系电话	LXDH	contactTel	医疗器械追溯工作负责人的电话号码	字符型	an..18		可选	
+
+13.【1026】《医疗器械基本信息》数据子集（UDI-DI）
+注：《医疗器械基本信息》数据集仅作参考，数据从国家药品监督管理局医疗器械唯一标识数据库获取，无需上传。
+
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	最小销售单元产品标识	ZXXSDYCPBS	udiDi	最小销售单元产品标识udi中di部分	字符型	an..100		必选	
+2	标识数据状态	BSSJZT	udiDiStatus	标识数据状态	字符型	a1		可选	
+3	最小销售单元中使用单元的数量	ZXXSDYZSYDYDSL	containCount	最小销售单元中使用单元的数量	字符型	n		可选	
+4	使用单元产品标识	SYDYCPBS	useUnitKey	使用单元产品标识	字符型	an..100		可选	
+5	产品标识编码体系类型	CPBSBMTXMC	udiType	产品标识编码体系类型，如 GS1， MA 码（ IDcode）	整数型	n..1	1,2,3	必选	1:GS1
+2:MA码（IDcode）
+3:AHM
+6	是否包含本体标识	SFYBTZJBS	isContainSelf	是否包含本体标识	整数型	n..1	1,0	必选	1:是
+0:否
+7	是否与最小销售单元产品标识一致	BTCPBSYZXXSDYCPBSSFYZ	isSameMinUnitKey	是否与最小销售单元产品标识一致	整数型	n..1	1,0	必选	1:是
+0:否
+8	本体产品标识	BTCPBS	selfKey	本体产品标识	字符型	an..100		必选	
+9	标识发布日期	CPBSFBRQ	pubDate	标识发布日期
+格式:2019-09-12	日期型	YYYY-MM-DD		必选	
+10	标识载体	BSZT	udiCarrier	标识载体	整数型	n..1	1,2,3,4	必选	1 一维码
+2 二维码
+3 RFID
+4 其他
+11	是否与注册/备案标识一致	SFYZCBAYZ	isSameRegisterKey	是否与注册/备案
+标识一致	整数型	n..1	1,0	必选	1:是
+0:否
+12	注册/备案产品标识	ZCBACPBS	registerKey	注册/备案
+产品标识	字符型	an..100		必选	
+13	产品名称/通用名称	CPMCTYMC	productName	产品名称/通用名称	字符型	an..200		必选	
+14	商品名称	SPMC	goodsName	商品名称	字符型	an..200		必选	
+15	规格型号	GGXH	spec	规格型号	字符型	an..200		必选	
+16	是否为包类产品/组套类产品	SFWBLZTLCP	isSet	是否为包类产品
+/组套类产品	整数型	n..1	1,0	必选	1:是
+0:否
+17	产品其他描述信息	CPMS	productOtherInfo	产品其他描述信息	字符型	an..500		可选	
+18	产品货号或编号	CPHHHBH	productNo	产品货号或编号	字符型	an..100		必选	
+19	医疗器械管理类别	GLLB	manageType	医疗器械管理类别	字符型	an..10		必选	1:一级
+2:二级
+3:三级
+21	产品类型	CPLX	productType	产品类型	整数型	n..1	1,2	必选	1:器械
+2:体外诊断试剂
+21	器械目录分类代码	FLBM	catalogCode	医疗器械目录分类代码	字符型	an..10		必选	
+22	原器械目录分类代码	YFLBM	catalogCodeSrc	原器械目录分类代码	字符型	an..10		
+必选	
+23	注册/备案人名称	YLQXZCRBARMC	registerCompanyName	注册/备案人名称	字符型	an..200		必选	
+24	注册/备案证对应的注册人/备案人的英文名称	YLQXZCRBARYWMC	registerCompanyNameEn	注册/备案证对应的注册人/备案人的英文名称	字符型	an..200		可选	
+25	注册/备案人统一社会信用代码	TYSHXYDM	uscid	注册/备案人统一社会信用代码	字符型	an..18		必选	
+26	注册/备案证号	ZCZBHHZBAPZBH	certificateNo	注册/备案证号， 多个之间用英文状态‘,’ 分隔	字符型	an..200		必选	
+27	耗材或者设备	HCHZSB	consumeOrEquipment	耗材或者设备	整数型	n..1	0,1	必选	0:耗材
+1:设备
+28	标记为一次性使用	SFBJWYCXSY	isDisposable	标记为一次性使用	整数型	n..1	0,1	必选	0:否
+1:是
+29	最大重复使用次数	ZDCFSYCS	maxUseCount	最大重复使用次数	整数型	n..8		必选	
+30	是否为已灭菌产品	SFWWJBZ	isSterilization	是否为已灭菌产品	整数型	n..1	0,1	必选	0:否
+1:是
+31	使用前是否需要进行灭菌	SYQSFXYJXMJ	needSterilizationBeforeUse	使用前是否需要进行灭菌:1 是 0 否	整数型	n..1	0,1	必选	0:否
+1:是
+32	灭菌方式	MJFS	sterilizationWay	灭菌方式	字符型	an..200		可选	
+33	医保耗材分类编码	YBBM	medicalInsuranceCatalogCode	27 位的医保耗材分类编码， 多个间用英文状态’ ,’ 分隔	字符型	an..200		可选	
+34	磁共振（MR） 安全相关信息	CGZMRAQXGXX	mrSafe	磁共振（MR） 安全相关信息	整数型	n..1	0,1,2,3	可选	0:安全
+1:条件安全
+2:不安全
+3:说明书或标签上面不包括 MR 安全信息
+35	特殊存储或操作条件	TSCCHCZTJ	specialStorage	特殊存储或操作条件	字符型	an..500		可选	
+36	特殊使用尺寸说明	TSCCSM	specialUseSizeInfo	特殊使用尺寸说明	字符型	an..500		可选	
+37	生产标识是否包含批号	SCBSSFBHPH	udiContainBatchno	生产标识是否包含
+批号	整数型	n..1	0,1	必选	0:否
+1:是
+38	生产标识是否包含序列号	SCBSSFBHXLH	udiContainSeqno	生产标识是否包含
+序列号	整数型	n..1	0,1	必选	0:否
+1:是
+39	生产标识是否包含生产日期	SCBSSFBHSCRQ	udiContainManufactureDate	生产标识是否包含
+生产日期	整数型	n..1	0,1	必选	0:否
+1:是
+40	生产标识是否包含失效日期	SCBSSFBHSXRQ	udiContainExpiringDate	生产标识是否包含
+失效日期	整数型	n..1	0,1	必选	0:否
+1:是
+41	其他信息的网址链接	QTXXDWZLJ	otherInfoUrl	其他信息的
+网址链接	字符型	an..200		可选	
+42	退市日期	TSRQ	delistingDate	退市日期	日期型	YYYY-MM-DD		可选	
+43	版本号	BBH	versionNumber	本产品标识变更次数	字符型	an..100		可选	
+44	版本日期	BBRQ	versionTime	版本日期	日期型	YYYY-MM-DD		可选	
+45	版本状态	BBZY	versionStatus	版本状态	字符型	an..10		可选	
+46	数据库记录 key	DBID	dbId	数据库记录 key	字符型	an..100		可选	
+　企业联系人
+　信息	QYLXRXXS	contacts	企业联系人信息
+（多条）	array				
+1	企业联系人邮箱	QYLXRYX	email	企业联系人邮箱	字符型	an..50		可选	
+2	企业联系人电话	QYLXRDH	tel	企业联系人电话	字符型	an..50		可选	
+3	企业联系人传真	QYLXRCZ	fax	企业联系人传真	字符型	an..50		可选	
+包装产品标识信息数据	BZCPBSXXS	packingInfos	包装产品标识信息数据（多条）	array				
+1	数据库记录key	DBID	dbId	数据库记录key	字符型	an..100		必选	
+2	包装产品标识	BZCPBS	pkgKey	包装产品标识	字符型	an..100		必选	
+3	包装内含下一级包装产品标识	BZNHXYJBZCPBS	pkgNextKey	包装内含下一级包装产品标识	字符型	an..100		可选	
+4	包装内含下一级产品标识数量	BZNHXYJCPBSSL	pkgNextCount	包装内含下一级产品标识数量	字符型	an..100		可选	
+5	包装级别	CPBZJB	pkgLevel	包装级别	字符型	an..10		必选	
+　存储或操作
+　信息数据	CCHCZXXS	storageInfos	存储或操作信息数据（多条）	array				
+1	数据库记录 key	DBID	dbId	数据库记录 key	字符型	an..100		必选	
+2	储存或操作条件	CCHCZTJ	conditions	储存或操作条件	字符型	an..500		必选	
+3	最低值	ZDZ	minValue	最低值	字符型	an..20		可选	
+4	最高值	ZGZ	maxValue	最高值	字符型	an..20		可选	
+5	计量单位	JLDW	unit	计量单位	字符型	an..20		可选	
+　临床尺寸
+　信息数据	LCCCXXS	clinicalInfos	临床尺寸信息数据（多条）	array				
+1	数据库记录 key	DBID	dbId	数据库记录 key	字符型	an..100		必选	
+2	尺寸类型	LCSYCCLX	clinicalType	尺寸类型	字符型	an..100		可选	
+3	尺寸值	CCZ	clinicalValue	尺寸值	字符型	an..100		必选	
+4	尺寸单位	CCDW	clincalUnit	尺寸单位	字符型	an..100		必选	
+
+
+
+2)【20】应用信息数据子集
+
+1.【2011】《医疗器械生产信息》数据子集
+
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项说
+明	数据
+类型	表示
+格式	允许值	约束	备注
+1	医疗器械生产企业名称	SCQYMC	companyName	医疗器械生产企业营业执照上的“名称”	字符型	an..200		必选	
+2	医疗器械生产企业统一社会信用代码	SCQYTYSHXYDM	uscid	医疗器械生产企业营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+3	生产地址	SCDZ	productionAddress	医疗器械生产地址	字符型	an..200		可选	
+4	生产单号	SCDH	productionOrderNo	医疗器械生产单号	字符型	an..100		必选	
+5	生产单日期	SCDRQ	productionOrderDate	医疗器械生产单日期	日期型	YYYY-MM-DD		必选	
+生产单医疗器械产品信息	YLQXXXS	products	生产单医疗器械产品信息（列表）	array				
+1	医疗器械唯一标识（UDI-DI）	UDIDI	udiDi	医疗器械唯一标识
+udi-di	字符型	an..50		必选	
+2	医疗器械通用名称	TYMC	productName	医疗器械通用名称	字符型	an..100		必选	
+3	医疗器械英文名称	YWMC	productNameEn	医疗器械英文名称	字符型	an..100		可选	
+4	医疗器械商品名称	SPMC	goodsName	医疗器械商品名称	字符型	an..100		可选	
+5	医疗器械生产日期	SCRQ	productionDate	医疗器械生产日期	日期型	YYYY-MM-DD		必选	
+6	医疗器械有效期截止日期	YXQJZRQ	expirationDate	医疗器械有效期截止日期	日期型	YYYY-MM-DD		必选	
+7	医疗器械生产批号	SCPH	batch	医疗器械生产批号	字符型	an..20		必选	
+8	医疗器械生产数量	SCSL	quantity	同一生产批号的最小销售包装（最小赋码单元）总数量	整数型	n..10		必选	
+生产单医疗器械唯一标识信息	UDIPIXXS	udiPis	　医疗器械唯一标识信息（列表）	array				
+1	医疗器械唯一标识（UDI-PI）	UDIPI	udiPi	医疗器械唯一标识（UDI-PI）	字符型	an..200		必选	
+2	上一级包装医疗器械唯一标识（UDI-PI）	SYJUDIPI	parentUdiPi	当前udi-pi大一级包装上的唯一标识	字符型	an..200		条件必选	当存在上一级包装时
+必选
+3	包装层级	BZCJ	packageLevel	当前udi-pi所处包装层级	整数型	n..10		可选	
+4	包含最小销售包装单元数量	BHZXXSBZDYSL	inboxQuantity	当前udi-pi包含的最小销售包装单元udi-pi的数量	整数型	n..10		可选	
+
+
+
+2.【2012】《医疗器械进口信息》数据子集
+
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	进口医疗器械代理企业名称	DLQYMC	agentCompanyName	获得境外医疗器械生产企业授权的进口医疗器械代理企业营业执照上的“名称”	字符型	an..200		必选	
+2	进口医疗器械代理企业统一社会信用代码	DLQYTYSHXYDM	agentCompanyUscid	获得境外医疗器械生产企业授权的进口医疗器械代理企业营业执照上的“统一社会信用代码”	字符型	an..18		必选	
+3	境外医疗器械生产企业名称（中文）	SCQYMC	productionCompanyName	境外医疗器械生产企业名称（中文）	字符型	an..200		可选	
+4	境外医疗器械生产企业名称（英文）	SCQYMCYW	productionCompanyNameEn	境外医疗器械生产企业名称（英文）	字符型	an..200		可选	
+5	生产地址	SCDZ	productionAddress	医疗器械生产地址	字符型	an..200		可选	
+6	进口单号	JKDH	importOrderNo	医疗器械进口单号	字符型	an..100		必选	
+7	医疗器械进口日期	JKRQ	importDate	医疗器械进口日期	日期型	YYYY-MM-DD		必选	
+进口单医疗器械产品信息	YLQXXXS	products	进口单医疗器械产品信息（列表）	array				
+1	医疗器械唯一标识（UDI-DI）	UDIDI	udiDi	医疗器械唯一标识（UDI-DI)	字符型	an..50		必选	
+2	医疗器械通用名称	TYMC	productName	进口医疗器械中文译名称	字符型	an..100		必选	
+3	医疗器械英文名称	YWMC	productNameEn	用英文形式表示的医疗器械通用名	字符型	an..100		可选	
+4	医疗器械商品名称	SPMC	goodsName	医疗器械商品名称	字符型	an..100		可选	
+5	医疗器械生产日期	SCRQ	productionDate	医疗器械生产日期	日期型	YYYY-MM-DD		必选	
+6	医疗器械有效期截止日期	YXQJZRQ	expirationDate	医疗器械有效期截止日期	日期型	YYYY-MM-DD		必选	
+7	医疗器械生产批号	SCPH	batch	医疗器械生产批号	字符型	an..20		必选	
+8	进口数量	JKSL	quantity	同批号进口的最小
+销售包装总数量	整数型	n..10		必选	
+医疗器械唯一标识信息	UDIPIXXS	udiPis	　医疗器械唯一标识信息（列表）	array				
+1	医疗器械唯一标识
+（UDI-PI）	UDIPI	udiPi	用于唯一标识各级
+销售包装单元的代码	字符型	an..200		必选	
+2	上一级包装医疗器械唯一标识
+（UDI-PI）	SYJUDIPI	parentUdiPi	当前udi-pi大一级包装上的udi-pi	字符型	an..200		条件
+必选	当存在上一级包装时必选
+3	包装层级	BZCJ	packageLevel	当前udi-pi所处包
+装层级	整数型	n..10		可选	
+4	包含最小销售包装单元数量	BHZXXSBZDYSL	inboxQuantity	当前udi-pi中包含的最小销售包装单元udi-pi的数量	整数型	n..10		可选	
+
+
+
+3.【2013】《医疗器械产品检验报告》数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	检验报告编号	JYBGBH	reportNo	检验报告书上标示
+的编号	字符型	an..50		必选	
+2	检验日期	JYRQ	inspectDate	检验日期	日期型	YYYY-MM-DD		必选	
+3	检验机构名称	JYJGMC	inspectCompanyName	检验机构名称	字符型	an..200		必选	
+4	检验报告扫描件	JYBGSMJ	reportFile	检验报告扫描件	二进制		PDF
+图片	必选	以base64格式进行编码传输
+5	医疗器械唯一标识（UDI-DI）	UDIDI	udiDi	医疗器械唯一标识
+（UDI-DI)	字符型	an..20		必选	
+6	医疗器械通用名称	TYMC	productName	医疗器械通用名称	字符型	an..100		必选	
+
+7	医疗器械英文名称	YWMC	productNameEn	医疗器械英文名称	字符型	an..100		可选	进口医疗器械必填
+8	医疗器械商品名称	SPMC	goodsName	医疗器械商品名称	字符型	an..100		可选	
+9	境内医疗器械生产企业名称	JNSCQYMC	manufacturerName	境内医疗器械生产企业名称	字符型	an..200		条件
+必选	
+10	境内医疗器械生产企业统一社会信用代码	SCQYTYSHXYDM	manufacturerUscid	境内医疗器械生产企业统一社会信用代码	字符型	an..18		条件
+必选	
+11	境外医疗器械生产企业名称（中文）	JWSCQYMCZW	foreignManufacturerNameCn	境外医疗器械生产企业名称（中文）	字符型	an..100		可选	
+12	境外医疗器械生产企业名称（英文）	JWSCQYMCYW	foreignManufacturerNameEn	境外医疗器械生产企业名称（英文）	字符型	an..100		条件必选	
+13	医疗器械生产日期	SCRQ	productionDate	医疗器械生产日期	日期型	YYYY-MM-DD		必选	
+14	医疗器械有效期截止日期	YXQJZRQ	expirationDate	医疗器械有效期截止日期	日期型	YYYY-MM-DD		必选	
+15	医疗器械生产批号	SCPH	batch	医疗器械生产批号	字符型	an..20		必选	
+
+
+
+
+4.【2015】《医疗器械发货单》信息数据子集
+
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	发货单编号	FHDBH	deliveryOrderNo	发货单上的编号	字符型	an..50		必选	
+2	订货单编号	DHDBH	purchaseOrderNo	订货单上的编号	字符型	an..50		可选	
+3	发货机构名称	FHJGMC	deliveryName	发货机构的中文名称	字符型	an..200		必选	
+4	发货机构统一社会信用代码	FHJGTYSHXYDM	deliveryUscid	发货机构的统一社会信用代码	字符型	an..18		必选	
+5	发货地址	FHDZ	deliveryAddress	发货单上的发货地址	字符型	an..200		必选	
+6	发货类型	FHLX	deliveryType	发货类型对应的代码	字符型	n2	见D.2	可选	
+7	发货人	FHR	sender	发货经办人的姓名	字符型	an..60		可选	
+8	发货时间	FHSJ	deliveryTime	离开发货单位的时间	日期时间型	YYYY-MM-DD
+Thh:mm:ss		必选	
+9	收货机构名称	SHJGMC	receivingName	收货机构名称	字符型	an..200		必选	
+10	收货机构统一社会信用代码	SHJGTYSHXYDM	receivingUscid	收货单位的统一社会信用代码	字符型	an..18		必选	
+11	收货地址	SHDZ	receivingAddress	发货单上的收货地址	字符型	an..200		必选	
+12	配送企业名称	PSQYMC	distributionName	配送企业名称	字符型	an..200		必选	
+13	配送企业统一社会信用代码	PSQYTYSHXYDM 	distributionUscid	药品配送企业的统一社会信用代码	字符型	an..18		必选	
+14	单据验证状态	DJYZZT	billStatus	发货机构在发货前确认的货物与单据是否一致的状态	字符型	n.1	0,1,2	可选	0：未验证
+1：验证通过
+2：验证未
+通过
+15	单据验证日期	DJYZRQ	billStatusCheckDate	单据验证状态验证日期	日期型	YYYY-MM-DD		可选	
+16	单据验证未通过原因	DJYZWTGYY	reasonsForFailure	单据验证失败的原因	字符型	an..200		可选	
+发货单医疗器械产品信息	YLQXXXS	products	发货单医疗器械产品信息（列表）	array				
+1	医疗器械唯一标识（UDI-DI）	UDIDI	udiDi	医疗器械唯一标识（UDI-DI）	字符型	an..50		必选	
+2	医疗器械通用名称	TYMC	productName	医疗器械通用名称	字符型	an..100		
+必选	
+
+3	医疗器械英文名称	YWMC	productNameEn	医疗器械英文名称	字符型	an..100		可选	
+4	医疗器械商品名称	SPMC	goodsName	医疗器械商品名称	字符型	an..100		可选	
+5	医疗器械生产日期	SCRQ	productionDate	包装上标示的生产日期	日期型	YYYY-MM-DD		必选	
+6	医疗器械有效期截止日期	YXQJZRQ	expirationDate	有效期的截止日期	日期型	YYYY-MM-DD		必选	
+7	医疗器械生产批号	SCPH	batch	包装上标示的生产
+批号	字符型	an..20		必选	
+8	发货数量	FHSL	quantity	发货的最小销售包装单元数量	整数型	n..10		必选	
+9	 注册人/备案人统一社会信用代码	USCID	companyUscid	 注册人/备案人统一社会信用代码	字符型	an..100		必选	
+10	注册人/备案人名称	QYMC	companyName	注册人/备案人名称	字符型	an..100		必选	
+发货单医疗器械唯一标识信息	UDIPIXXS	udiPis	发货单医疗器械
+唯一标识信息（列表）	array				
+1	医疗器械唯一标识（UDI-PI）	UDIPI	udiPi	用于唯一标识各级销售包装单元的 udi-pi	字符型	an..200		必选	
+2	上一级包装医疗器械唯一标识（UDI-PI）	SYJUDIPI	parentUdiPi	当前 udi-pi 大一级包装上的 udi-pi	字符型	an..200		条件必选	有上一级则必选
+3	包装层级	BZCJ	packageLevel	当前 udi-pi 所处包装层级	整数型	n..10		可选	
+4	包含最小销售包装单元数量	BHZXXSBZDYSL	inboxQuantity	当前 udi-pi 中包含的最小销售包装单元 udi-pi 的数量	整数型	n..10		可选	
+
+
+5.【2016】《医疗器械收货单》信息数据子集
+
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	收货单编号	SHDBH	receiptNo	收货单上的编号	字符型	an..50		必选	
+2	发货单编号	FHDBH	deliveryOrderNo	发货单上的编号	字符型	an..50		可选	
+3	订货单编号	DHDBH	purchaseOrderNo	订货单上的编号	字符型	an..50		可选	
+4	发货机构名称	FHJGMC	deliveryName	发货机构的
+中文名称	字符型	an..200		必选	
+5	发货机构统一社会信用代码	FHJGTYSHXYDM	deliveryUscid	发货机构的
+统一社会信用代码	字符型	an..18		必选	
+6	发货地址	FHDZ	deliveryAddress	收货单上的
+发货地址	字符型	an..200		必选	
+7	收货机构名称	SHJGMC	receivingName	收货机构名称	字符型	an..200		必选	
+8	收货机构统一社会信用代码	SHJGTYSHXYDM	receivingUscid	收货单位的
+统一社会信用代码	字符型	an..18		必选	
+9	收货地址	SHDZ	receivingAddress	实际收货位置的地址	字符型	an..200		必选	
+10	收货类型	SHLX	receivingType	收货类型对应的代码	字符型	n2	见D.3	可选	
+11	收货人	SHR	receiver	收货人姓名	字符型	an..60		可选	
+12	收货时间	SHSJ	receivingTime	药品到达收货单位
+的时间	日期时间型	YYYY-MM-DD
+Thh:mm:ss		必选	
+13	单据验证状态	DJYZZT	billStatus	单据验证状态代码	字符型	n.1	0,1,2	可选	0：未验证
+1：通过验证
+2：未通过
+验证
+14	单据验证日期	DJYZRQ	billStatusCheckDate	单据验证状态
+验证日期	日期型	YYYY-MM-DD		可选	
+15	单据验证未通过原因	DJYZWTGYY	reasonsForFailure	单据验证失败的原因	字符型	an..200		可选	
+收货单医疗器械产品信息	YLQXXXS	products	收货单医疗器械产品信息（列表）	array				
+1	医疗器械唯一标识（UDI-DI）	UDIDI	udiDi	医疗器械唯一标识（UDI-DI)	字符型	an..20		必选	
+2	医疗器械通用名称	TYMC	productName	医疗器械通用名称	字符型	an..100		必选	
+3	医疗器械英文名称	YWMC	productNameEn	医疗器械英文名称	字符型	an..100		可选	
+4	医疗器械商品名称	SPMC	goodsName	医疗器械商品名称	字符型	an..100		可选	
+5	医疗器械生产日期	SCRQ	productionDate	包装上标示的生产日期	日期型	YYYY-MM-DD		必选	
+6	医疗器械有效期截止日期	YXQJZRQ	expirationDate	有效期的截止日期	日期型	YYYY-MM-DD		必选	
+7	医疗器械生产批号	SCPH	batch	包装上标示的生产批号	字符型	an..20		必选	
+8	应收货数量	YSHSL	receivableQuantity	应收货的最小销售包装单元数量	整数型	n..10		可选	
+9	实际收货数量	SJSHSL	receivingQuantity	实际收货的最小销售包装单元数量	整数型	n..10		必选	
+10	 注册人/备案人统一社会信用代码	USCID	companyUscid	 注册人/备案人统一社会信用代码	字符型	an..100		必选	
+11	注册人/备案人名称	QYMC	companyName	注册人/备案人名称	字符型	an..100		必选	
+收货单医疗器械唯一标识信息	UDIPIXXS	udiPis	收货单医疗器械
+唯一标识信息（列表）	array				
+1	医疗器械唯一标识（UDI-PI）	UDIPI	udiPi	用于唯一标识各级销售包装单元的 udi-pi	字符型	an..200		必选	
+2	上一级包装医疗器械唯一标识（UDI-PI）	SYJUDIPI	parentUdiPi	当前 udi-pi 大一级包装上的 udi-pi	字符型	an..200		条件必选	有上一级则必选
+3	包装层级	BZCJ	packageLevel	当前 udi-pi 所处包装层级	整数型	n..10		可选	
+4	包含最小销售包装单元
+数量	BHZXXSBZDY SL	inboxQuantity	当前 udi-pi 中包含的最小销售包装单元 udi-pi 的数量	整数型	n..8		可选	
+
+
+6.【2017】《医疗器械使用信息》数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	使用单号	SYDH	useOrderNo	医疗器械使用单号	字符型	an..200		必选	
+2	使用单位名称	SYDWMC	useCompanyName	使用单位经营许可
+证上的“企业名称”	字符型	an..200		必选	
+3	使用单位统一社会信用代码	SYDWTYSHXYDM	useCompanyUscid	使用单位的统一社会信用代码	字符型	an..18		必选	
+使用单医疗器械使用记录	SYXXS	useInfos	使用单医疗器械
+使用记录（列表）	array				
+1	使用时间	SYSJ	useTime	医疗器械使用的时间	日期时间型	YYYY-MM-DD
+Thh:mm:ss		必选	
+2	使用人身份信息	SYRSFXX	user	使用人的身份证号码	字符型	an..60		可选	
+3	使用人电话号码	SYRDHHM	userTel	使用人的电话号码	字符型	an..18		可选	
+4	医疗器械唯一标识（UDI-PI）	UDIPI	udiPi	医疗器械唯一标识（UDI-PI）	字符型	an..200		必选	
+5	上一级包装医疗器械唯一标识（UDI-PI）	SYJUDIPI	parentUdiPi	上一级包装医疗器械唯一标识（UDI-PI)	字符型	an..200		条件必选	当存在上一级包装时必选
+6	包装层级	BZCJ	packageLevel	当前 UDI-PI 所处包装层级	整数型	an..10		可选	
+7	包含最小销售包装单元数量	BHZXXSBZDYSL	inboxQuantity	当前 UDI-PI 中包含的最小销售包装单元 UDI-PI 的数量	整数型	n..8		可选	
+8	医疗器械唯一标识（UDI-DI）	UDIDI	udiDi	医疗器械唯一标识（UDI-DI）	字符型	an..50		必选	
+9	医疗器械通用名称	TYMC	productName	医疗器械通用名称	字符型	an..100		必选	
+10	医疗器械英文名称	YWMC	productNameEn	医疗器械英文名称	字符型	an..100		可选	
+11	医疗器械商品名称	SPMC	goodsName	医疗器械商品名称	字符型	an..100		可选	
+12	医疗器械生产日期	SCRQ	productionDate	包装上标示的生产日期	日期型	YYYY-MM-DD		必选	
+13	医疗器械有效期截止日期	YXQJZRQ	expirationDate	有效期的截止日期	日期型	YYYY-MM-DD		必选	
+14	医疗器械生产批号	SCPH	batch	包装上标示的生产批号	字符型	an..20		必选	
+15	 注册人/备案人统一社会信用代码	USCID	companyUscid	 注册人/备案人统一社会信用代码	字符型	an..100		必选	
+16	注册人/备案人名称	QYMC	companyName	注册人/备案人名称	字符型	an..100		必选	
+
+7.【2018】《医疗器械召回信息》数据子集
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	召回企业名称	ZHQYMC	recallCompanyName	召回机构的名称	字符型	an..200		必选	
+
+2	召回企业统一社会信用代码	ZHQYTYSHXYDM	recallCompanynUscid	召回机构的统一社会信用代码	字符型	an..18		必选	
+3	召回单号	ZHDH	recallOrderNo	此次召回的单号	字符型	an..100		必选	
+4	开始统计时间	KSTJSJ	startTime	召回数量统计的开始时间点	日期时
+间型	YYYY-MM-DD
+Thh:mm:ss		必选	
+5	结束统计时间	JSTJSJ	endTime	召回数量统计的结束时间点	日期时
+间型	YYYY-MM-DD
+Thh:mm:ss		必选	
+6	召回等级	ZHDJ	recallLevel	召回的等级	字符型	n1	1,2,3	可选	1:一级
+2:二级
+3:三级
+召回医疗器械产品信息	YLQXXXS	products	召回医疗器械产品信息
+（列表）	array				
+1	医疗器械通用名称	TYMC	productName	医疗器械通用名称	字符型	an..100		必选	
+2	医疗器械英文名称	YWMC	productNameEn	医疗器械英文名称	字符型	an..100		可选	
+3	医疗器械商品名称	SPMC	goodsName	医疗器械商品名称	字符型	an..100		可选	
+4	医疗器械唯一标识（UDI-DI）	UDIDI	udiDi	医疗器械唯一标识（UDI-DI）	字符型	an..50		必选	
+5	医疗器械生产日期	SCRQ	productionDate	包装上标示的生产日期	日期型	YYYY-MM-DD		必选	
+6	医疗器械有效期截止日期	YXQJZRQ	expirationDate	有效期的截止日期	日期型	YYYY-MM-DD		必选	
+7	医疗器械生产批号	SCPH	batch	包装上标示的生产批号	字符型	an..20		必选	
+8	召回数量	ZHSL	recalledQuantity	在统计时间段内召回的
+最小销售包装单元数量	整数型	n..10		必选	
+9	 注册人/备案人统一社会信用代码	USCID	companyUscid	 注册人/备案人统一社会信用代码	字符型	an..100		必选	
+10	注册人/备案人名称	QYMC	companyName	注册人/备案人名称	字符型	an..100		必选	
+召回医疗器械唯一标识信息	UDIPIXXS	udiPis	召回医疗器械
+唯一标识信息（列表）	array				
+1	医疗器械唯一标识（UDI-PI）	UDIPI	udiPi	用于唯一标识各级
+销售包装单元的 udi-pi	字符型	an..200		必选	
+2	上一级包装医疗器械唯一标识（UDI-PI)	SYJUDIPI	parentUdiPi	当前 udi-pi 大一级包装上的 udi-pi	字符型	an..200		条件必选	有上一级则必选
+3	包装层级	BZCJ	packageLevel	当前 udi-pi 所处包
+装层级	整数型	n..10		可选	1,2,3等
+4	包含最小销
+售包装单元数量	BHZXXSBZDY SL	inboxQuantity	当前 udi-pi 中包含
+的最小销售包装单元 udi-pi 的数量	
+整数型	
+n..10		
+可选	
+
+
+8.【2021】《医疗器械零售信息》数据子集
+
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	零售机构名称	LSJGMC	retailCompanyName	零售机构经营许可证上的“企业名称（名称）”	字符型	an..200		必选	
+2	零售机构统一社会信用代码	LSJGTYSHXYDM	retailCompanyUscid	零售机构的统一社会信用代码	字符型	an..18		必选	
+3	零售时间	LSSJ	soldTime	医疗器械售出的时间	日期时
+间型	YYYY-MM-DD
+Thh:mm:ss		必选	
+4	零售单号	LSDH	retailOrderNo	医疗器械零售单号	字符型	an..100		必选	
+5	购买人身份证号	GMRSFXX	buyer	购买人的身份证号码	字符型	an..60		可选	
+6	购买人电话号码	GMRDHHM	buyerTel	购买人的电话号码	字符型	an..18		可选	
+7	是否互联网订单	SFHLWDD	onlineSale	是否互联网订单	数字型	n..1	1,0	可选	1:是
+0:否
+零售单医疗器械产品信息	YLQXXXS	products	零售单医疗器械产品信息（列表）	array				
+1	医疗器械唯一标识（UDI-DI）	UDIDI	udiDi	医疗器械唯一标识（UDI-DI）	字符型	an..50		必选	
+2	医疗器械通用名称	TYMC	productName	医疗器械通用名称	字符型	an..100		必选	
+3	医疗器械英文名称	YWMC	productNameEn	医疗器械英文名称	字符型	an..100		可选	
+4	医疗器械商品名称	SPMC	goodsName	医疗器械商品名称	字符型	an..100		可选	
+5	医疗器械生产日期	SCRQ	productionDate	包装上标示的生产日期	日期型	YYYY-MM-DD		必选	
+6	医疗器械有效期截止日期	YXQJZRQ	expirationDate	有效期的截止日期	日期型	YYYY-MM-DD		必选	
+7	医疗器械生产批号	SCPH	batch	包装上标示的生产批号	字符型	an..20		必选	
+8	零售数量	LSSL	quantity	零售的最小销售包装单
+元数量	整数型	n..10		必选	
+9	 注册人/备案人统一社会信用代码	USCID	companyUscid	 注册人/备案人统一社会信用代码	字符型	an..100		必选	
+10	注册人/备案人名称	QYMC	companyName	注册人/备案人名称	字符型	an..100		必选	
+零售单医疗器械唯一标识信息	UDIPIXXS	udiPis	　零售医疗器械唯一标识信息（列表）	array				
+1	医疗器械唯一标识（UDI-PI）	UDIPI	udiPi	医疗器械唯一标识（UDI-PI）	字符型	an..200		必选	
+2	上一级包装医疗器械唯一标识（UDI-PI）	SYJUDIPI	parentUdiPi	上一级包装医疗器械唯一标识（UDI-PI)	字符型	an..200		条件
+必选	当存在上一级包装时必选
+3	包装层级	BZCJ	packageLevel	当前 UDI-PI 所处包装层级描述	整数型	n..10		可选	
+4	包含最小销售包装单元
+数量	BHZXXSBZDYSL	inboxQuantity	当前 UDI-PI 中包含的最小销售包装单元 UDI-PI 的数量	整数型	n..10		可选	
+
+
+9.【2051-2053】《温湿度信息》数据子集
+A.单据与存储设备关系信息（2051）
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	企业统一社会信用代码	TYSHXYDM	uscid	营业执照上的“社会信用代码”	字符型	an..18		必选	
+2	企业名称	QYMC	companyName	营业执照上的“企业名称”	字符型	an..200		必选	
+3	单据编号	DJBH	billCode	生产单、进口单、收货单、发货单等单据的单号	字符型	an..100		必选	
+4	单据类型	DJLX	billType	单据类型	字符型	an..1	1,2	必选	1:生产单
+2：收货单
+5	存储设备编号	CCSBBH	equipmentCode	该次生产或收货放到的存储设备编号，如e1	字符型	an..50		必选	
+B.存储设备温湿度信息（2052）
+序号	数据项
+名称	数据项短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	企业统一社会信用代码	TYSHXYDM	uscid	营业执照上的“社会信用代码”	字符型	an..18		必选	
+2	企业名称	QYMC	companyName	营业执照上的“企业名称”	字符型	an..200		必选	
+3	存储设备编号	CCSBBH	equipmentCode	该次生产或收货放到的存储设备编号，如e1	字符型	an..20		必选	数据接收者当设备编号在本地为空时则进行新增
+4	存储设备名称	CCSBMC	equipmentName	该次生产或收货放到的存储设备名称，如仓库1	字符型	an..20		必选	
+5	存储设备类型	CCSBLX	equipmentType	存储设备的类型描述	字符型	an..20		可选	
+6	温湿度信息	WSDXX	info	用于标注的温湿度的字符串：[{"collectionTime":"2018-10-29 23:10:08","temperature":"22.3~45","humidity":"50.0"}, {"collectionTime":"2018-10-29 19:10:08","temperature":"22.3~45","humidity":"50.0"}, {"collectionTime":"2018-10-30 19:10:08","temperature":"12.3~45","humidity":"50.0"}]	字符型	an..		必选	json格式字符串
+C.运输温度信息（2053）
+序号	数据项名称	数据项短名	数据项
+英文名称	数据项说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	企业统一社会信用代码	TYSHXYDM	uscid	发货机构营业执照上的“社会信用代码”	字符型	an..18		必选	
+2	企业名称	QYMC	companyName	发货机构营业执照上的“企业名称”	字符型	an..200		必选	
+3	发货单号	FHDH	billCode	发货单号	字符型	an..40		必选	
+4	温湿度信息	WSDXX	info	用于标注的温湿度的字符串：[{
+"collectionTime":
+"2018-10-29 23:10:08","temperature":"22.3~45","humidity":"50.0"}, {"collectionTime":"2018-10-29 19:10:08","temperature":"22.3~45","humidity":"50.0"}, {"collectionTime":"2018-10-30 19:10:08","temperature":"12.3~45","humidity":"50.0"}]	字符型	an..		必选	json格式字符串
+5	运输设备编号	YSSBBH	equipmentCode	该次运输医疗器械放到的运输设备编号，如c1	字符型	an..50		必选	
+6	运输设备名称	YSSBMC	equipmentName	该次运输医疗器械放到的运输设备名称，如车辆A	字符型	an..50		必选	
+7	运输企业统一社会信用代码	YSQYTYSHXYDM	transportCompanyUscid	具体负责此次运输的物流公司统一社会信用代码	字符型	an..18		必选	
+8	运输企业名称	YSQYMC	transportCompanyName	具体负责此次运输的物流公司名称	字符型	an..200		必选	
+
+
+10.【2099】《撤销单信息》数据子集
+　　　撤销单仅支持应用信息数据撤销，不支持基础信息数据撤销。撤销方式如下：
+　　方式1：（已知原始单事件编号）【原始事件编号】必选，【原始单关联机构统一社会信用代码】和【原始单单据编号】可选
+　　方式2：（未知原始单事件编号）【原始事件编号】可选，【原始单关联机构统一社会信用代码】和【原始单单据编号】必选
+　　　　　
+序号	数据项
+名称	数据项
+短名	数据项
+英文名称	数据项
+说明	数据
+类型	表示
+格式	允许值	约束	备注
+1	原始单数据子集	YSDSJZJ	sourceSubType	原始单数据子集	字符型	an..4		必选	原始单的数据子集
+如：2015
+2	原始单事件编号	YSDSJBH	sourceEventId	原始单事件编号	字符型	an..50		条件
+必选
+
+参考撤销方式	原始单的事件编号
+3	原始单关联机构统一社会信用代码	YSDGLJGID	sourceOrgId	原始单关联机构统一社会信用代码	字符型	an..18		条件
+必选
+
+参考撤销方式	原始单的关联机构统一社会信用代码，内容如下：
+生产单：生产企业统一社会信用代码
+进口单：进口代理企业统一社会信用代码
+产品检验报告：境内医疗器械生产企业统一社会信用代码
+发货单：发货机构统一社会信用代码
+收货单：收货机构统一社会信用代码
+使用单：使用单位统一社会信用代码
+零售单：零售机构统一社会信用代码
+召回单：召回企业统一社会信用代码
+4	原始单单据编号	YSDDJBH	sourceOrderId	原始单单据编号	字符型	an..100		条件
+必选
+
+参考撤销方式	原始单的单据编号，内容如下：
+生产单：生产单号
+进口单：进口单号
+产品检验报告：检验报告编号
+发货单：发货单号
+收货单：收货单号
+零售单：零售单号
+使用单：使用单号
+召回单：召回单号
+5	撤销原因	CXYY	cancelReason	撤销原因	字符型	an..200		必选	
+6	撤销时间	CXSJ	cancelTime	撤销时间	日期时
+间型	YYYY-MM-DD
+Thh:mm:ss		必选	
+
+
+六、数据字典D
+D.1 行政区划
+国家区划编码：
+　　参考国标《GB/T 2659-2000》
+　　中国-156
+
+国内省市县区划详见《医疗器械追溯行政区划.xls》
+D.2 发货单类型
+序号	字典项编码	字典项名称	备注
+1	01	销售出库	
+2	02	供应出库	
+3	03	盘亏出库	
+4	04	退货出库	
+5	05	抽检出库	
+6	06	调拨出库	
+7	07	销毁出库	
+8	08	赠品出库	
+9	09	使用出库	
+10	10	召回出库	
+11	11	损坏出库	
+12	12	报废出库	
+13	99	其他	
+
+D.3 收货单类型
+序号	字典项编码	字典项名称	备注
+1	01	采购入库	
+2	02	退货入库	
+3	03	生产入库	
+4	04	调拨入库	
+5	05	赠品入库	
+6	06	盘盈入库	
+7	07	召回入库	
+8	08	报废入库	
+9	99	其他	
+
+七、不同单位上传数据集说明
+1.生产单位上传
+[1011]《境内医疗器械生产企业》基本信息数据子集
+[1012]《境内医疗器械生产许可证》基本信息数据子集
+[1013]《境内医疗器械生产备案凭证》基本信息数据子集
+[1014 ]《境内医疗器械委托生产备案凭证》基本信息数据子集（如果有该情况需上传）
+[1015 ]《医疗器械注册证《境内、进口)》基本信息数据子集
+[1016 ]《医疗器械备案信息《境内、进口)》基本信息数据子集
+[1026]《医疗器械基本信息》数据子集
+[2011]《医疗器械生产信息》数据子集
+[2013]《医疗器械产品检验报告》数据子集
+[2015]《医疗器械发货单》信息数据子集
+[2018]《医疗器械召回信息》数据子集（如果有该情况需上传）
+
+2.经营单位上传
+[1017]《进口医疗器械代理企业》基本信息数据子集
+[1021 ]《医疗器械经营企业》基本信息数据子集
+[1022]《医疗器械经营许可证》基本信息数据子集
+[1023]《医疗器械经营备案凭证》基本信息数据子集
+[2015]《医疗器械发货单》信息数据子集
+[2016]《医疗器械收货单》信息数据子集
+[2021]《医疗器械零售信息》数据子集（如果有零售情况需上传）
+
+3.配送单位上传
+[1024]《医疗器械配送企业》基本信息数据子集
+[2015]《医疗器械发货单》信息数据子集
+[2016]《医疗器械收货单》信息数据子集
+4.使用单位上传
+[1025 ]《医疗器械使用单位》基本信息数据子集
+[2015]《医疗器械发货单》信息数据子集（如果有发货情况需上传）
+[2016]《医疗器械收货单》信息数据子集
+[2017]《医疗器械使用信息》数据子集
+[2021]《医疗器械零售信息》数据子集（如果有零售情况需上传）
+
+
+八、常见问题
+1.针对数据集中UDIDI、UDIPI字段的说明
+　　(1)、UDIDI：医疗器械产品标识（UDI-DI）不传带“(01)”的UDIDI标识位，只传UDIDI的值。如：16973133332007。
+(2)、UDIPI：医疗器械生产标识（UDI-PI）需要包含UDIDI信息，并且UDIPI需要携带
+　　括号标识位，如：(01)16973133332007(11)20220822(17)20240822(10)20220822P(21)4521452
+　　有些单位使用的扫码枪无法扫描出UDI中的小括号，建议更换专业级扫码枪
+2.【上一级包装医疗器械唯一标识（UDI-PI）】值，若没有，则不传。
+3.【包含最小销售包装单元数量-BHZXXSBZDYSL】若为最小包装单元，则传1；若为非最小销售包装单元，则传包含的最小销售包装单元的数量
+4.【包装层级】若为最小包装单元，则为1；最小包装的上级包装为2。然后依次递增：1，2，3，4...
+5.单据中的医疗器械生产标识PI信息【UDIPIXXS】需要包含所有子级别的PI信息。如：2级包装的PI，需要同时传入所有1级包装的PI值。
+6.若医疗器械为进口，则医疗器械注册/备案人信息为代理企业。
+7.数据上传标准文件中要求必填的信息均为UDI追溯必要数据，针对记录为空或未记录的信息应尽快做好自身信息化升级。基础数据升级后重新上传；往期部分字段未记录的业务数据：若未记录的字段为UDIPI，则相关收发货、使用、零售单据无需上传；若未记录的为其他字段，字符型字段可填“暂无”、日期型字段可填“1970-01-01”
+PS:部分经营企业反馈无进口代理企业信息，若企业未经营进口医疗器械，可不上传[1017]《进口医疗器械代理企业》基本信息数据子集，反之根据《医疗器械监督管理条例》第四十五条 医疗器械经营企业购进医疗器械时，应当查验供货者的资质和医疗器械的合格证明文件，建立进货查验记录制度和销售记录制度。进货查验记录和销售记录应当真实、准确、完整和可追溯，并按照国务院药品监督管理部门规定的期限予以保存。
+8.一类和部分二类未赋码的医疗器械不需要上传收发货、使用、零售单据，待赋码后再上传。
